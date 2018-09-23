@@ -1,5 +1,6 @@
 import enum
 import random
+from typing import Iterable
 
 
 class CardFace(enum.Enum):
@@ -136,13 +137,13 @@ class Card:
     def suit(self):
         return self.__suit
 
-    def __lt__(self, other):
+    def __lt__(self, other: lambda: Card):
         return self.face.value < other.face.value
 
-    def __gt__(self, other):
+    def __gt__(self, other: lambda: Card):
         return self.face.value > other.face.value
 
-    def __eq__(self, other):
+    def __eq__(self, other: lambda: Card):
         return self.face.value == other.face.value
 
 
@@ -160,7 +161,7 @@ class CardDeck:
     def shuffle(self):
         random.shuffle(self._deck)
 
-    def deal(self):
+    def deal(self) -> Card:
         return self._deck.pop()
 
     def __len__(self):
