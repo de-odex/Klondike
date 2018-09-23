@@ -82,20 +82,17 @@ class CardSuit(enum.Enum):
         """
         Method to check whether one suit is the same as another.
         """
-        self_color = "red"
-        other_color = "red"
-        if self in [CardSuit.CLUBS, CardSuit.SPADES]:
-            self_color = "black"
-        if other in [CardSuit.CLUBS, CardSuit.SPADES]:
-            other_color = "black"
+        self_color = "black" if self in [CardSuit.CLUBS, CardSuit.SPADES] else "red"
+        other_color = "black" if other in [CardSuit.CLUBS, CardSuit.SPADES] else "red"
+
         return self_color == other_color
 
 
 class Card:
-    '''
+    """
     A PlayingCard represents a standard card in a
     standard 52-card deck.
-    '''
+    """
 
     def __init__(self, suit=None,
                  face=None):
@@ -119,11 +116,9 @@ class Card:
             elif type(face) == str:
                 self.__face = CardFace.match_value(face)
         else:
-            if suit:
-                card_str = suit
-                if type(card_str) == str:
-                    self.__suit = CardSuit.match_char(card_str[1])
-                    self.__face = CardFace.match_value(card_str[0])
+            if suit and type(suit) == str:
+                    self.__suit = CardSuit.match_char(suit[1])
+                    self.__face = CardFace.match_value(suit[0])
             else:
                 raise ValueError
 
