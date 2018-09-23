@@ -164,6 +164,18 @@ class CardDeck:
     def deal(self) -> Card:
         return self._deck.pop()
 
+    def put(self, puts_card: Card or Iterable):
+        try:
+            puts_card = iter(puts_card)
+            for i in puts_card:
+                self._deck.append(i)
+        except TypeError:
+            self._deck.append(puts_card)
+
+    @property
+    def deck(self) -> list:
+        return self._deck
+
     def __len__(self):
         return len(self._deck)
 

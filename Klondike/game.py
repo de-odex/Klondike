@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from . import card
 
 
@@ -10,15 +8,7 @@ class KlondikeDeck(card.CardDeck):
         else:
             return "Empty deck"
 
-    def put(self, puts_card: card.Card or Iterable):
-        try:
-            puts_card = iter(puts_card)
-            for i in puts_card:
-                self._deck.append(i)
-        except TypeError:
-            self._deck.append(puts_card)
-
 
 class Game:
     def __init__(self):
-        self.decks = {}
+        self.decks = []
