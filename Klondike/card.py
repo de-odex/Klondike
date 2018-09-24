@@ -95,8 +95,7 @@ class Card:
     standard 52-card deck.
     """
 
-    def __init__(self, suit=None,
-                 face=None):
+    def __init__(self, suit=None, face=None):
         """
         Constructs a PlayingCard. The suit can be a PlayingCardSuit or
         a one-character string that matches the first letter of the
@@ -118,8 +117,8 @@ class Card:
                 self.__face = CardFace.match_value(face)
         else:
             if suit and type(suit) == str:
-                    self.__suit = CardSuit.match_char(suit[1])
-                    self.__face = CardFace.match_value(suit[0])
+                self.__suit = CardSuit.match_char(suit[1])
+                self.__face = CardFace.match_value(suit[0])
             else:
                 raise ValueError
 
@@ -127,7 +126,11 @@ class Card:
         return self.__face.repr_word() + " of " + self.__suit.value
 
     def __repr__(self):
-        return self.__face.repr_char() + self.__suit.value[0].upper()
+        return f"<{type(self).__qualname__}: face={self.__face.repr_word()}, suit={self.__suit.value}>"
+
+    @property
+    def short(self):
+        return self.__face.repr_char() + self.__suit.value.upper()[0]
 
     @property
     def face(self):
