@@ -155,11 +155,16 @@ class CardDeck:
         self._deck = []
 
         if full:
-            for suit in CardSuit:
-                for face in CardFace:
-                    self._deck.append(Card(suit, face))
-
+            self.fill()
             self.shuffle()
+
+    def fill(self):
+        for suit in CardSuit:
+            for face in CardFace:
+                self._deck.append(Card(suit, face))
+
+    def clear(self):
+        self._deck = []
 
     def shuffle(self):
         random.shuffle(self._deck)
@@ -171,9 +176,12 @@ class CardDeck:
         try:
             puts_card = iter(puts_card)
             for i in puts_card:
-                self._deck.append(i)
+                self.__put(i)
         except TypeError:
-            self._deck.append(puts_card)
+            self.__put(puts_card)
+
+    def __put(self, puts_card: Card):
+        self._deck.append(puts_card)
 
     @property
     def deck(self) -> list:
@@ -182,9 +190,13 @@ class CardDeck:
     def __len__(self):
         return len(self._deck)
 
-    def __repr__(self):
-        str_builder = ""
-        for i, card in enumerate(self._deck):
-            str_builder += repr(card) + (" " if (i + 1) % 13 else "\n")
+    def __str__(self):
+        if self._deck:
+            if len(self._deck) <= 5:
+                return ', '.join([str(i) for i in self._deck])
+            return ' '.join([i.short for i in self._deck])
+        else:
+            return "Empty deck"
 
-        return str_builder
+    def __repr__(self):
+        return f"<{type(self).__qualname__}: [{', '.join([repr(card) for card in self._deck]).strip()}]>"
