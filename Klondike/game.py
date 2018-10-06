@@ -1,4 +1,5 @@
 from . import card
+from .base import logger
 
 
 class KlondikeDeck:
@@ -6,11 +7,27 @@ class KlondikeDeck:
         self._hidden_deck = card.CardDeck()
         self._shown_deck = card.CardDeck()
 
+    def take(self, n: int = 1) -> card.Card or card.Iterable:
+        x = self._shown_deck.take(n)
+        if not self._shown_deck:
+            self._shown_deck.put(self._hidden_deck.take(1))
+        return x
+
+    def put(self, puts_card: card.Card or card.Iterable):
+        self._shown_deck.put(puts_card)
+
+    @property
+    def deck(self):
+        return self._shown_deck
+
+    def __getitem__(self, item):
+        return self._shown_deck[item]
+
     def __repr__(self):
         return f"<{type(self).__qualname__}: hidden={repr(self._hidden_deck)}, shown={repr(self._shown_deck)}>"
 
     def __str__(self):
-        return f"hidden: {self._hidden_deck}, shown: {self._shown_deck}"
+        return f"Klondike deck: {len(self._hidden_deck)} hidden, {self._shown_deck}"
 
 
 class SuitDeck(card.CardDeck):
@@ -28,12 +45,16 @@ class SuitDeck(card.CardDeck):
         else:
             raise ValueError("Card does not match deck")
 
-    def deal(self):
+    def take(self, n=0):
         raise NotImplementedError
 
     def __repr__(self):
         return f"<{type(self).__qualname__}: " \
                f"[{', '.join([repr(card) for card in self._deck]).strip()}], suit={self._suit}>"
+
+
+class MoveError(Exception):
+    pass
 
 
 class Game:
@@ -44,9 +65,46 @@ class Game:
         self.decks = [KlondikeDeck() for __ in range(7)]
         for i, v in enumerate(self.decks):
             for __ in range(i + 1):
-                v._hidden_deck.put(self.base_deck.deal())
+                v._hidden_deck.put(self.base_deck.take())
 
             # show one card
-            v._shown_deck.put(v._hidden_deck.deal())
+            v._shown_deck.put(v._hidden_deck.take())
 
         self.foundations = {k.value: SuitDeck(k) for k in card.CardSuit}
+
+        self.hand_deck = card.CardDeck()
+
+        self.debug()
+
+    def debug(self):
+        logger.debug(f"base deck: {self.base_deck}")
+
+        x = '\n'.join([str(i) for i in self.decks])
+        logger.debug(f"klondike decks: \n{x}")
+
+        logger.debug(f"foundations: {self.foundations}")
+        logger.debug(f"hand: {self.hand_deck}")
+        logger.debug("\n")
+
+    def take(self, take_number: int, deck_index: int):
+        self.hand_deck.put(self.decks[deck_index].take(take_number))
+        self.debug()
+        return self
+
+    def put(self, deck_index: int):
+        if self.verify_move(deck_index):
+            self.decks[deck_index].put(self.hand_deck.take(card.MAX_CARDS))
+            self.debug()
+            return self
+        else:
+            raise MoveError
+
+    def verify_move(self, deck_index: int) -> bool:
+        logger.debug(f"verify: {self.decks[deck_index][-1].face.value} - {self.hand_deck[0].face.value} = "
+                     f"{self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value}")
+        logger.debug(f"verify: {not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)}")
+        try:
+            return self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value == 1 and \
+                   not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)
+        except AttributeError:
+            return card.CardFace.KING - self.hand_deck[0].face.value == 1
