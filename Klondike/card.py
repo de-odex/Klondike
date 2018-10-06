@@ -1,6 +1,10 @@
 import enum
 import random
-from typing import Iterable
+from typing import Iterable, List
+
+from .base import logger
+
+MAX_CARDS = 52
 
 
 class CardFace(enum.Enum):
@@ -152,7 +156,7 @@ class Card:
 
 class CardDeck:
     def __init__(self, full=False):
-        self._deck = []
+        self._deck: List[Card] = []
 
         if full:
             self.fill()
@@ -169,7 +173,14 @@ class CardDeck:
     def shuffle(self):
         random.shuffle(self._deck)
 
-    def deal(self) -> Card:
+    def take(self, n: int = 1) -> Card or Iterable:
+        if n == 1:
+            return self.__take()  # Card
+        if n < 1:
+            n = len(self._deck)
+        return reversed([self.__take() for __ in range(min(n, len(self._deck)))])  # Iterable
+
+    def __take(self):
         return self._deck.pop()
 
     def put(self, puts_card: Card or Iterable):
@@ -189,6 +200,9 @@ class CardDeck:
 
     def __len__(self):
         return len(self._deck)
+
+    def __getitem__(self, item):
+        return self.deck[item]
 
     def __str__(self):
         if self._deck:
