@@ -97,12 +97,12 @@ class Game:
             self.debug()
             return self
         else:
-            raise MoveError
+            raise MoveError("invalid move")
 
     def verify_move(self, deck_index: int) -> bool:
         logger.debug(f"verify: {self.decks[deck_index][-1].face.value} - {self.hand_deck[0].face.value} = "
-                     f"{self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value}")
-        logger.debug(f"verify: {not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)}")
+                     f"{self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value} = "
+                     f"{not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)}")
         try:
             return self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value == 1 and \
                    not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)

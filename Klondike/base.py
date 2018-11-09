@@ -1,12 +1,15 @@
 import logging
+import sys
 
-from . import game
-
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
+from . import parser
+from . import game
+
 if __name__ == '__main__':
-    game = game.Game()
+    parser_obj = parser.CommandParser(game.Game())
 
-    game.take(1, int(input("take from where: "))).put(int(input("put where: ")))
-
+    while True:
+        cmds = input(" >>> ")
+        parser_obj._parse_many_(cmds)
