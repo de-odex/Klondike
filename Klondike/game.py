@@ -2,7 +2,7 @@ from . import card
 from .base import logger
 
 
-class KlondikeDeck:
+class Tableau:
     def __init__(self):
         self._hidden_deck = card.CardDeck()
         self._shown_deck = card.CardDeck()
@@ -62,7 +62,7 @@ class Game:
         self.base_deck = card.CardDeck(full=True)
 
         # decks are generated left to right
-        self.decks = [KlondikeDeck() for __ in range(7)]
+        self.decks = [Tableau() for __ in range(7)]
         for i, v in enumerate(self.decks):
             for __ in range(i + 1):
                 v._hidden_deck.put(self.base_deck.take())
