@@ -2,7 +2,7 @@ from . import card
 from .base import logger
 
 
-class Tableau:
+class TableauPile:
     def __init__(self):
         self._hidden_deck = card.CardDeck()
         self._shown_deck = card.CardDeck()
@@ -27,7 +27,10 @@ class Tableau:
         return f"<{type(self).__qualname__}: hidden={repr(self._hidden_deck)}, shown={repr(self._shown_deck)}>"
 
     def __str__(self):
-        return f"Klondike deck: {len(self._hidden_deck)} hidden, {self._shown_deck}"
+        return f"TableauPile: {len(self._hidden_deck)} hidden, {self._shown_deck}"
+
+    def __len__(self):
+        return len(self._hidden_deck) + len(self._shown_deck)
 
 
 class SuitDeck(card.CardDeck):
@@ -62,7 +65,7 @@ class Game:
         self.base_deck = card.CardDeck(full=True)
 
         # decks are generated left to right
-        self.decks = [Tableau() for __ in range(7)]
+        self.decks = [TableauPile() for __ in range(7)]
         for i, v in enumerate(self.decks):
             for __ in range(i + 1):
                 v._hidden_deck.put(self.base_deck.take())
