@@ -75,16 +75,16 @@ def parse_number(number):
         return int(list2text(number))
 
 
-def split_iter(to_split, seps):
-    x = to_split
-    for i in seps:
-        x = '|'.join(x.split(i))
-    return [s.strip() for s in x.split("|") if s.strip()]
+# def split_iter(to_split, seps):
+#     x = to_split
+#     for i in seps:
+#         x = '|'.join(x.split(i))
+#     return [s.strip() for s in x.split("|") if s.strip()]
 
 
 class CommandParser:
     def __init__(self, game_obj):
-        self.game_obj = game_obj
+        self.game_obj: Game = game_obj
         self.command_list = [func for func in dir(self) if
                              callable(getattr(self, func)) and not (func.startswith("_") or func.endswith("__"))]
 
@@ -94,24 +94,16 @@ class CommandParser:
 
         logger.debug(self.command_list)
 
-    def _parse_many_(self, commands):
-        # try:
-        # take a card from the second deck and then put the card into the second deck
-        # take a card from the fifth deck and put it into the fifth deck
-        # take 2 cards from the first deck then put them into deck 4
-        parsed = split_iter(commands, ['and', 'then'])
-        for i in parsed:
-            try:
-                self._parse_(i)
-            except ParseException as e:
-                logger.exception("")
-                print(f"Invalid commands: {i}\nException: {e}")
-            except Exception as e:
-                print(f"Command error: {i}\nException: {e}")
-
     def _parse_(self, command):
-        parsed = self.cmd.parseString(command, parseAll=True)
-        getattr(self, parsed[0])(parsed)
+        try:
+            parsed = self.cmd.parseString(command, parseAll=True)
+            getattr(self, parsed[0])(parsed)
+        except ParseException as e:
+            logger.exception("")
+            print(f"Invalid command: {command}\nException: {e}")
+        except Exception as e:
+            logger.exception("")
+            print(f"Command error: {command}\nException: {e}")
 
     _cards = oneOf(["card", "cards"])
     _cards_put = oneOf(["them", "the", "these"])

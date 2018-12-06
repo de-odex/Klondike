@@ -9,7 +9,7 @@ class TableauPile:
 
     def take(self, n: int = 1) -> card.Card or card.Iterable:
         x = self._shown_deck.take(n)
-        if not self._shown_deck:
+        if not self._shown_deck and self._hidden_deck:
             self._shown_deck.put(self._hidden_deck.take(1))
         return x
 
@@ -53,7 +53,7 @@ class SuitDeck(card.CardDeck):
 
     def __repr__(self):
         return f"<{type(self).__qualname__}: " \
-               f"[{', '.join([repr(card) for card in self._deck]).strip()}], suit={self._suit}>"
+            f"[{', '.join([repr(card) for card in self._deck]).strip()}], suit={self._suit}>"
 
 
 class MoveError(Exception):
@@ -82,8 +82,8 @@ class Game:
     def debug(self):
         logger.debug(f"base deck: {self.base_deck}")
 
-        x = '\n'.join([str(i) for i in self.decks])
-        logger.debug(f"klondike decks: \n{x}")
+        x = '\n'.join(["deck " + str(i + 1) + ": " + str(v) for i, v in enumerate(self.decks)])
+        logger.debug(f"TableauPile: \n{x}")
 
         logger.debug(f"foundations: {self.foundations}")
         logger.debug(f"hand: {self.hand_deck}")

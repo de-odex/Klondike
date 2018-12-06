@@ -130,7 +130,7 @@ class Card:
         return self.__face.repr_word() + " of " + self.__suit.value
 
     def __repr__(self):
-        return f"<{type(self).__qualname__}: face={self.__face.repr_word()}, suit={self.__suit.value}>"
+        return f"<{type(self).__qualname__}: face={self.face.repr_word()}, suit={self.suit.value}>"
 
     @property
     def short(self):

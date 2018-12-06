@@ -11,5 +11,5 @@ if __name__ == '__main__':
     parser_obj = parser.CommandParser(game.Game())
 
     while True:
-        cmds = input(" >>> ")
-        parser_obj._parse_many_(cmds)
+        cmd = input(" >>> ")
+        parser_obj._parse_(cmd)
