@@ -13,6 +13,9 @@ class TableauPile:
             self._shown_deck.put(self._hidden_deck.take(1))
         return x
 
+    def peek(self):
+        return self._shown_deck.deck
+
     def put(self, puts_card: card.Card or card.Iterable):
         self._shown_deck.put(puts_card)
 
@@ -87,27 +90,43 @@ class Game:
 
         logger.debug(f"foundations: {self.foundations}")
         logger.debug(f"hand: {self.hand_deck}")
-        logger.debug("\n")
 
-    def take(self, take_number: int, deck_index: int):
-        self.hand_deck.put(self.decks[deck_index].take(take_number))
-        self.debug()
-        return self
+    def move_info(self):
+        print("""XX CN    CN CN CN CN
 
-    def put(self, deck_index: int):
-        if self.verify_move(deck_index):
-            self.decks[deck_index].put(self.hand_deck.take(card.MAX_CARDS))
-            self.debug()
+CN XX XX XX XX XX XX
+   CN XX XX XX XX XX
+      CN XX XX XX XX
+         CN XX XX XX
+            CN XX XX
+               CN XX
+                  CN""")
+
+    def place(self, take_number: int, take_index: int, put_index: int):
+        if take_index == 0:
+            if take_number > 1:
+                raise MoveError("can only take 1 card at a time from the main deck")
+
+            if self.peek_verify(put_index, self.base_deck.deck[-1]):
+                self.hand_deck.put(self.base_deck.take(take_number))
+                self.decks[put_index].put(self.hand_deck.take(card.MAX_CARDS))
+                return self
+            else:
+                raise MoveError("invalid move")
+
+        if not put_index:
+            raise MoveError("cannot place cards into main deck")
+
+        if self.peek_verify(put_index, self.decks[take_index].peek()[-1]):
+            self.hand_deck.put(self.decks[take_index].take(take_number))
+            self.decks[put_index].put(self.hand_deck.take(card.MAX_CARDS))
             return self
         else:
             raise MoveError("invalid move")
 
-    def verify_move(self, deck_index: int) -> bool:
-        logger.debug(f"verify: {self.decks[deck_index][-1].face.value} - {self.hand_deck[0].face.value} = "
-                     f"{self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value} = "
-                     f"{not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)}")
-        try:
-            return self.decks[deck_index][-1].face.value - self.hand_deck[0].face.value == 1 and \
-                   not self.hand_deck[0].suit.is_same_color(self.decks[deck_index][-1].suit)
-        except AttributeError:
-            return card.CardFace.KING - self.hand_deck[0].face.value == 1
+    def peek_verify(self, deck_index: int, peeked_card: card.Card) -> bool:
+        if len(self.decks[deck_index]):
+            return self.decks[deck_index][-1].face.value - peeked_card.face.value == 1 \
+                   and not peeked_card.suit.is_same_color(self.decks[deck_index][-1].suit)
+        else:
+            return card.CardFace.KING == peeked_card.face.value

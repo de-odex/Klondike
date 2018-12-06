@@ -1,5 +1,5 @@
 from pyparsing import *
-
+from .game import MoveError, Game
 from .base import logger
 
 
@@ -106,36 +106,32 @@ class CommandParser:
             print(f"Command error: {command}\nException: {e}")
 
     _cards = oneOf(["card", "cards"])
-    _cards_put = oneOf(["them", "the", "these"])
     _card_start = OneOrMore(~_cards + Word(alphanums)).setResultsName('card_amount') + \
                   Suppress(_cards)
-    _card_end = Or([
-        Suppress("deck") + Word(alphanums).setResultsName('deck_identifier'),
-        Suppress("the") + Word(alphanums).setResultsName('deck_identifier') + Suppress("deck")
-    ])
 
-    def take(self, parsed):
-        # test these:
-        # take 3 cards from deck 2
-        # take twenty two cards from deck 2
-        # take a card from the second deck
+    def debug(self):
+        self.game_obj.debug()
 
-        take = self._card_start + Suppress("from") + self._card_end
-        parsed = take.parseString(parsed[1])
+    def place(self, parsed):
+        deck_identifier_parser = lambda name: Or(
+                [Suppress("deck") + Word(alphanums).setResultsName(f'deck_identifier_{name}'),
+                 Suppress("the") + Word(alphanums).setResultsName(f'deck_identifier_{name}') + Suppress("deck")])
 
+        place = self._card_start + Suppress("from") + deck_identifier_parser("1") + \
+                Suppress("into") + deck_identifier_parser("2")
+        parsed = place.parseString(parsed[1])
+
+        deck_identifier = (parse_number(parsed.deck_identifier_1) if parsed.deck_identifier_1 != "main" else 0,
+                           parse_number(parsed.deck_identifier_2))
         card_amount = parse_number(parsed.card_amount)
-        deck_identifier = parse_number(parsed.deck_identifier)
 
-        self.game_obj.take(card_amount, deck_identifier - 1)
+        if len(self.game_obj.decks[deck_identifier[0] - 1].deck) < card_amount:
+            raise MoveError("not enough cards to take")
 
-    def put(self, parsed):
-        put = ((Optional(self._cards_put) + Optional(self._cards)) ^ Literal("it")) + \
-              Suppress(oneOf(["in to", "into"])) + self._card_end
-        parsed = put.parseString(parsed[1])
+        self.game_obj.place(card_amount, deck_identifier[0] - 1, deck_identifier[1] - 1)
 
-        deck_identifier = parse_number(parsed.deck_identifier)
-
-        self.game_obj.put(deck_identifier - 1)
+    def info(self):
+        self.game_obj.move_info()
 
     def help(self, parsed):
-        pass
+        raise NotImplementedError
