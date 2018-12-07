@@ -104,6 +104,7 @@ class Card:
         defined suits. The face value can be a PlayingCardFace or a
         number that maps to the defined face values.
         """
+        self.hidden = False
         if suit:
             if type(suit) == CardSuit:
                 self.__suit = suit
@@ -125,14 +126,14 @@ class Card:
                 raise ValueError
 
     def __str__(self):
-        return self.__face.repr_word() + " of " + self.__suit.value
+        return self.__face.repr_word() + " of " + self.__suit.value if not self.hidden else "unknown"
 
     def __repr__(self):
-        return f"<{type(self).__qualname__}: face={self.face.repr_word()}, suit={self.suit.value}>"
+        return f"<{type(self).__qualname__}: face={self.face.repr_word()}, suit={self.suit.value}, hidden={self.hidden}>"
 
     @property
     def short(self):
-        return self.__face.repr_char() + self.__suit.value.upper()[0]
+        return self.__face.repr_char() + self.__suit.value.upper()[0] if not self.hidden else "XX"
 
     @property
     def face(self):
@@ -212,6 +213,34 @@ class CardDeck:
 
     def __repr__(self):
         return f"<{type(self).__qualname__}: [{', '.join([repr(card) for card in self._deck]).strip()}]>"
+
+
+class HiddenDeck(CardDeck):
+    def put(self, puts_card: Card or Iterable):
+        try:
+            puts_card = iter(puts_card)
+            for i in puts_card:
+                self.__put(i)
+        except TypeError:
+            self.__put(puts_card)
+
+    def __put(self, puts_card: Card):
+        puts_card.hidden = True
+        self._deck.append(puts_card)
+
+
+class ShownDeck(CardDeck):
+    def put(self, puts_card: Card or Iterable):
+        try:
+            puts_card = iter(puts_card)
+            for i in puts_card:
+                self.__put(i)
+        except TypeError:
+            self.__put(puts_card)
+
+    def __put(self, puts_card: Card):
+        puts_card.hidden = False
+        self._deck.append(puts_card)
 
 
 class StockDeck(CardDeck):
