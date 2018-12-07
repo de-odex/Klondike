@@ -40,8 +40,8 @@ class SuitDeck(card.CardDeck):
 
     def __put(self, puts_card: card.Card):
         if self._suit == puts_card.suit:
-            if (self.deck and puts_card.face.value - self.deck[-1].face.value == 1) or \
-                    (not self.deck and puts_card.face == card.CardFace.ACE):
+            if puts_card.face == card.CardFace.ACE if not self.deck else \
+                    puts_card.face.value - self.deck[-1].face.value == 1:
                 self._deck.append(puts_card)
             else:
                 raise ValueError("Card face is not after deck's last card face")
