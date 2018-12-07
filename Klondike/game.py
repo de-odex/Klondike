@@ -69,12 +69,9 @@ class Game:
         for i, v in enumerate(self.decks):
             for __ in range(i + 1):
                 v._hidden_deck.put(self.base_deck.take())
-
             # show one card
             v._shown_deck.put(v._hidden_deck.take())
-
-        self.foundations = {k.value: SuitDeck(k) for k in card.CardSuit}
-
+        self.foundations = [SuitDeck(k) for k in card.CardSuit]
         self.hand_deck = card.CardDeck()
 
         self.debug()
