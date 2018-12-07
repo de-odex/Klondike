@@ -1,11 +1,14 @@
 from . import card
 from .base import logger
+import itertools
 
 
 class TableauPile:
     def __init__(self):
         self.hidden_deck = card.HiddenDeck()
         self.shown_deck = card.ShownDeck()
+
+        self.current = 0
 
     def take(self, n: int = 1) -> card.Card or card.Iterable:
         x = self.shown_deck.take(n)
@@ -31,6 +34,20 @@ class TableauPile:
 
     def __len__(self):
         return len(self.hidden_deck) + len(self.shown_deck)
+
+    @property
+    def iterator_deck(self):
+        return [*self.hidden_deck, *self.shown_deck]
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current >= len(self.iterator_deck):
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.iterator_deck[self.current - 1]
 
 
 class SuitDeck(card.CardDeck):
