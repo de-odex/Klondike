@@ -91,8 +91,6 @@ class Game:
         self.foundations = [SuitDeck(k) for k in card.CardSuit]
         self.hand_deck = card.CardDeck()
 
-        self.debug()
-
     def debug(self):
         logger.debug(f"stock deck: {self.stock_deck}")
 
