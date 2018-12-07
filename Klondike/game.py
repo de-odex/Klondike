@@ -4,33 +4,33 @@ from .base import logger
 
 class TableauPile:
     def __init__(self):
-        self._hidden_deck = card.CardDeck()
-        self._shown_deck = card.CardDeck()
+        self.hidden_deck = card.HiddenDeck()
+        self.shown_deck = card.ShownDeck()
 
     def take(self, n: int = 1) -> card.Card or card.Iterable:
-        x = self._shown_deck.take(n)
-        if not self._shown_deck and self._hidden_deck:
-            self._shown_deck.put(self._hidden_deck.take(1))
+        x = self.shown_deck.take(n)
+        if not self.shown_deck and self.hidden_deck:
+            self.shown_deck.put(self.hidden_deck.take(1))
         return x
 
     def put(self, puts_card: card.Card or card.Iterable):
-        self._shown_deck.put(puts_card)
+        self.shown_deck.put(puts_card)
 
     @property
     def deck(self):
-        return self._shown_deck.deck
+        return self.shown_deck.deck
 
     def __getitem__(self, item):
-        return self._shown_deck[item]
+        return self.shown_deck[item]
 
     def __repr__(self):
-        return f"<{type(self).__qualname__}: hidden={repr(self._hidden_deck)}, shown={repr(self._shown_deck)}>"
+        return f"<{type(self).__qualname__}: hidden={repr(self.hidden_deck)}, shown={repr(self.shown_deck)}>"
 
     def __str__(self):
-        return f"TableauPile: {len(self._hidden_deck)} hidden, {self._shown_deck}"
+        return " ".join(i.short for i in self.iterator_deck)
 
     def __len__(self):
-        return len(self._hidden_deck) + len(self._shown_deck)
+        return len(self.hidden_deck) + len(self.shown_deck)
 
 
 class SuitDeck(card.CardDeck):
@@ -68,9 +68,9 @@ class Game:
         self.decks = [TableauPile() for __ in range(7)]
         for i, v in enumerate(self.decks):
             for __ in range(i + 1):
-                v._hidden_deck.put(self.base_deck.take())
+                v.hidden_deck.put(self.stock_deck.take())
             # show one card
-            v._shown_deck.put(v._hidden_deck.take())
+            v.shown_deck.put(v.hidden_deck.take())
         self.foundations = [SuitDeck(k) for k in card.CardSuit]
         self.hand_deck = card.CardDeck()
 
