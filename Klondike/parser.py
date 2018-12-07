@@ -126,6 +126,9 @@ class CommandParser:
 
         self.game_obj.place(card_amount, deck_identifier[0] - 1, deck_identifier[1] - 1)
 
+    def draw(self, parsed):
+        self.game_obj.stock_deck.pass_card()
+
     def info(self, parsed):
         self.game_obj.move_info()
 
