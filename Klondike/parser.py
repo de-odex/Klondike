@@ -122,7 +122,9 @@ class CommandParser:
         parsed = place.parseString(parsed[1])
 
         deck_identifier = (parse_number(parsed.deck_identifier_1) if parsed.deck_identifier_1 != "main" else 0,
-                           parse_number(parsed.deck_identifier_2))
+                           ["clubs", "diamonds", "hearts", "spades"].index(parsed.deck_identifier_2) + 0b10000
+                           if any(parsed.deck_identifier_1 == i for i in ["clubs", "diamonds", "hearts", "spades"])
+                           else parse_number(parsed.deck_identifier_2))
         card_amount = parse_number(parsed.card_amount)
 
         if len(self.game_obj.decks[deck_identifier[0] - 1].deck) < card_amount:

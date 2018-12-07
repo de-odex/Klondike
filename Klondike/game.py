@@ -97,23 +97,32 @@ CN XX XX XX XX XX XX
                   CN""")
 
     def place(self, take_number: int, take_index: int, put_index: int):
+        to_take = self.decks
+        to_put = self.decks
+
+        if take_index == put_index:
+            # y tho
+            raise MoveError("cannot take and put to the same deck")
+
         if take_index == 0:
             if take_number > 1:
                 raise MoveError("can only take 1 card at a time from the main deck")
+            to_take = self.base_deck
 
-            if self.peek_verify(put_index, self.base_deck.deck[-1]):
-                self.hand_deck.put(self.base_deck.take(take_number))
-                self.decks[put_index].put(self.hand_deck.take(card.MAX_CARDS))
-                return self
-            else:
-                raise MoveError("invalid move")
+        if take_index ^ 0b10000 < 0b10000:
+            to_take = self.foundations
+            take_index ^= 0b10000
 
-        if not put_index:
+        if put_index == 0:
             raise MoveError("cannot place cards into main deck")
 
-        if self.peek_verify(put_index, self.decks[take_index].peek()[-1]):
-            self.hand_deck.put(self.decks[take_index].take(take_number))
-            self.decks[put_index].put(self.hand_deck.take(card.MAX_CARDS))
+        if put_index ^ 0b10000 < 0b10000:
+            to_put = self.foundations
+            put_index ^= 0b10000
+
+        if self.peek_verify(put_index, to_take[take_index].deck[-1]):
+            self.hand_deck.put(to_take[take_index].take(take_number))
+            to_put[put_index].put(self.hand_deck.take(card.MAX_CARDS))
             return self
         else:
             raise MoveError("invalid move")
