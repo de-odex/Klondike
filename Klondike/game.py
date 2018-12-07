@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from . import card
 from .base import logger
 import itertools
@@ -101,15 +103,18 @@ class Game:
         logger.debug(f"hand: {self.hand_deck}")
 
     def move_info(self):
-        print("""XX CN    CN CN CN CN
+        dummy = namedtuple("dummy", "short")
+        lines = [
+            ["XX", self.stock_deck[-1].short, "  ", *(i[-1].short if i else "//" for i in self.foundations)],
+            [""]
+        ]
+        for i in itertools.zip_longest(*self.decks, fillvalue=dummy("  ")):
+            lst = []
+            for j in i:
+                lst.append(j.short)
+            lines.append(lst)
 
-CN XX XX XX XX XX XX
-   CN XX XX XX XX XX
-      CN XX XX XX XX
-         CN XX XX XX
-            CN XX XX
-               CN XX
-                  CN""")
+        print("\n".join(" ".join(i) for i in lines))
 
     def place(self, take_number: int, take_index: int, put_index: int):
         to_take = self.decks
