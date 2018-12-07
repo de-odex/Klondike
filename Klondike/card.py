@@ -2,8 +2,6 @@ import enum
 import random
 from typing import Iterable, List
 
-from .base import logger
-
 MAX_CARDS = 52
 
 

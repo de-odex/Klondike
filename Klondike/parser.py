@@ -1,6 +1,7 @@
 from pyparsing import *
-from .game import MoveError, Game
+
 from .base import logger
+from .game import Game, MoveError
 
 
 class ConversionException(Exception):
