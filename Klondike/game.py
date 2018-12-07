@@ -70,7 +70,7 @@ class SuitDeck(card.CardDeck):
 
     def __repr__(self):
         return f"<{type(self).__qualname__}: " \
-            f"[{', '.join([repr(card) for card in self._deck]).strip()}], suit={self._suit}>"
+            f"[{', '.join([repr(i) for i in self._deck]).strip()}], suit={self._suit}>"
 
 
 class MoveError(Exception):
