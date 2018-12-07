@@ -214,3 +214,8 @@ class CardDeck:
 
     def __repr__(self):
         return f"<{type(self).__qualname__}: [{', '.join([repr(card) for card in self._deck]).strip()}]>"
+
+
+class StockDeck(CardDeck):
+    def pass_card(self):
+        self._deck.insert(0, self._deck.pop())

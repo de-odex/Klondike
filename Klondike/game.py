@@ -62,7 +62,7 @@ class MoveError(Exception):
 
 class Game:
     def __init__(self):
-        self.base_deck = card.CardDeck(full=True)
+        self.stock_deck = card.StockDeck(full=True)
 
         # decks are generated left to right
         self.decks = [TableauPile() for __ in range(7)]
@@ -77,7 +77,7 @@ class Game:
         self.debug()
 
     def debug(self):
-        logger.debug(f"base deck: {self.base_deck}")
+        logger.debug(f"stock deck: {self.stock_deck}")
 
         x = '\n'.join(["deck " + str(i + 1) + ": " + str(v) for i, v in enumerate(self.decks)])
         logger.debug(f"TableauPile: \n{x}")
@@ -107,7 +107,7 @@ CN XX XX XX XX XX XX
         if take_index == 0:
             if take_number > 1:
                 raise MoveError("can only take 1 card at a time from the main deck")
-            to_take = self.base_deck
+            to_take = self.stock_deck
 
         if take_index ^ 0b10000 < 0b10000:
             to_take = self.foundations
