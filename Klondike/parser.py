@@ -75,13 +75,6 @@ def parse_number(number):
         return int(list2text(number))
 
 
-# def split_iter(to_split, seps):
-#     x = to_split
-#     for i in seps:
-#         x = '|'.join(x.split(i))
-#     return [s.strip() for s in x.split("|") if s.strip()]
-
-
 class CommandParser:
     def __init__(self, game_obj):
         self.game_obj: Game = game_obj
