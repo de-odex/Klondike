@@ -13,15 +13,12 @@ class TableauPile:
             self._shown_deck.put(self._hidden_deck.take(1))
         return x
 
-    def peek(self):
-        return self._shown_deck.deck
-
     def put(self, puts_card: card.Card or card.Iterable):
         self._shown_deck.put(puts_card)
 
     @property
     def deck(self):
-        return self._shown_deck
+        return self._shown_deck.deck
 
     def __getitem__(self, item):
         return self._shown_deck[item]
