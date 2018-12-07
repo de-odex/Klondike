@@ -128,8 +128,14 @@ CN XX XX XX XX XX XX
             raise MoveError("invalid move")
 
     def peek_verify(self, deck_index: int, peeked_card: card.Card) -> bool:
-        if len(self.decks[deck_index]):
+        if self.decks[deck_index]:
             return self.decks[deck_index][-1].face.value - peeked_card.face.value == 1 \
                    and not peeked_card.suit.is_same_color(self.decks[deck_index][-1].suit)
         else:
             return card.CardFace.KING == peeked_card.face.value
+
+    def is_finished(self) -> bool:
+        return any(len(i) for i in self.foundations)
+
+    def __bool__(self) -> bool:
+        return not self.is_finished()

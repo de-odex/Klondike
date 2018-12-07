@@ -8,8 +8,14 @@ from . import parser
 from . import game
 
 if __name__ == '__main__':
-    parser_obj = parser.CommandParser(game.Game())
+    game_obj = game.Game()
+    parser_obj = parser.CommandParser(game_obj)
 
     while True:
         cmd = input(" >>> ")
         parser_obj._parse_(cmd)
+
+        if not game_obj:
+            break
+
+    print("done")

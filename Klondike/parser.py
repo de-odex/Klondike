@@ -109,7 +109,7 @@ class CommandParser:
     _card_start = OneOrMore(~_cards + Word(alphanums)).setResultsName('card_amount') + \
                   Suppress(_cards)
 
-    def debug(self):
+    def debug(self, parsed):
         self.game_obj.debug()
 
     def place(self, parsed):
@@ -132,7 +132,7 @@ class CommandParser:
 
         self.game_obj.place(card_amount, deck_identifier[0] - 1, deck_identifier[1] - 1)
 
-    def info(self):
+    def info(self, parsed):
         self.game_obj.move_info()
 
     def help(self, parsed):
