@@ -21,6 +21,13 @@ class TableauPile:
     def put(self, puts_card: card.Card or card.Iterable):
         self.shown_deck.put(puts_card)
 
+    def verify(self, verify_card: card.Card) -> bool:
+        if self.shown_deck:
+            return self.shown_deck[-1].face.value - verify_card.face.value == 1 \
+                   and not verify_card.suit.is_same_color(self.shown_deck[-1].suit)
+        else:
+            return card.CardFace.KING == verify_card.face.value
+
     @property
     def deck(self):
         return self.shown_deck.deck
@@ -64,9 +71,18 @@ class SuitDeck(card.CardDeck):
                     puts_card.face.value - self.deck[-1].face.value == 1:
                 self._deck.append(puts_card)
             else:
-                raise ValueError("Card face is not after deck's last card face")
+                raise ValueError("card face is not after deck's last card face")
         else:
-            raise ValueError("Card does not match deck")
+            raise ValueError("card does not match deck")
+
+    def verify(self, verify_card: card.Card) -> bool:
+        logger.debug(card.CardFace.ACE == verify_card.face)
+        logger.debug(verify_card.suit == self._suit)
+        if self._deck:
+            return self._deck[-1].face.value - verify_card.face.value == -1 \
+                   and verify_card.suit == self._suit
+        else:
+            return card.CardFace.ACE == verify_card.face and verify_card.suit == self._suit
 
     def take(self, n=0):
         raise NotImplementedError
@@ -130,7 +146,7 @@ class Game:
         if take_index == 0:
             if take_number > 1:
                 raise MoveError("can only take 1 card at a time from the main deck")
-            to_take = self.stock_deck
+            to_take = [self.stock_deck]
 
         if take_index ^ 0b10000 < 0b10000:
             to_take = self.foundations
@@ -143,19 +159,12 @@ class Game:
             to_put = self.foundations
             put_index ^= 0b10000
 
-        if self.peek_verify(put_index, to_take[take_index].deck[-1]):
+        if to_put[put_index].verify(to_take[take_index].deck[-take_number]):
             self.hand_deck.put(to_take[take_index].take(take_number))
             to_put[put_index].put(self.hand_deck.take(card.MAX_CARDS))
             return self
         else:
             raise MoveError("invalid move")
-
-    def peek_verify(self, deck_index: int, peeked_card: card.Card) -> bool:
-        if self.decks[deck_index]:
-            return self.decks[deck_index][-1].face.value - peeked_card.face.value == 1 \
-                   and not peeked_card.suit.is_same_color(self.decks[deck_index][-1].suit)
-        else:
-            return card.CardFace.KING == peeked_card.face.value
 
     def is_finished(self) -> bool:
         return any(len(i) == 13 for i in self.foundations)
