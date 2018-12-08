@@ -46,6 +46,7 @@ class TableauPile:
 
     def __next__(self):
         if self.current >= len(self.iterator_deck):
+            self.current = 0
             raise StopIteration
         else:
             self.current += 1
