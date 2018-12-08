@@ -157,7 +157,7 @@ class Game:
             return card.CardFace.KING == peeked_card.face.value
 
     def is_finished(self) -> bool:
-        return any(len(i) for i in self.foundations)
+        return any(len(i) == 13 for i in self.foundations)
 
     def __bool__(self) -> bool:
         return not self.is_finished()
