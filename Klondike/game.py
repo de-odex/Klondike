@@ -1,8 +1,8 @@
+import itertools
 from collections import namedtuple
 
 from . import card
 from .base import logger
-import itertools
 
 
 class TableauPile:
