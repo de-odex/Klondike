@@ -159,19 +159,17 @@ class Game:
             # y tho
             raise MoveError("cannot take and put to the same deck")
 
-        if take_index == 0:
+        if take_index == -1:
             if take_number > 1:
                 raise MoveError("can only take 1 card at a time from the main deck")
             to_take = [self.stock_deck]
-
-        if take_index ^ 0b10000 < 0b10000:
+        elif take_index ^ 0b10000 < 0b10000:
             to_take = self.foundations
             take_index ^= 0b10000
 
-        if put_index == 0:
+        if put_index == -1:
             raise MoveError("cannot place cards into main deck")
-
-        if put_index ^ 0b10000 < 0b10000:
+        elif put_index ^ 0b10000 < 0b10000:
             to_put = self.foundations
             put_index ^= 0b10000
 
