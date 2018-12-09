@@ -23,9 +23,12 @@ class TableauPile:
 
     def verify(self, verify_card: card.Card) -> bool:
         if self.shown_deck:
+            logger.debug(f"card is less than floor: {self.shown_deck[-1].face.value - verify_card.face.value == 1}")
+            logger.debug(f"card of different color: {not verify_card.suit.is_same_color(self.shown_deck[-1].suit)}")
             return self.shown_deck[-1].face.value - verify_card.face.value == 1 \
                    and not verify_card.suit.is_same_color(self.shown_deck[-1].suit)
         else:
+            logger.debug(f"card is king: {card.CardFace.KING == verify_card.face.value}")
             return card.CardFace.KING == verify_card.face.value
 
     @property
@@ -76,12 +79,14 @@ class SuitDeck(card.CardDeck):
             raise ValueError("card does not match deck")
 
     def verify(self, verify_card: card.Card) -> bool:
-        logger.debug(card.CardFace.ACE == verify_card.face)
-        logger.debug(verify_card.suit == self._suit)
         if self._deck:
+            logger.debug(f"card is greater than floor: {self._deck[-1].face.value - verify_card.face.value == -1}")
+            logger.debug(f"card is same suit as pile: {verify_card.suit == self._suit}")
             return self._deck[-1].face.value - verify_card.face.value == -1 \
                    and verify_card.suit == self._suit
         else:
+            logger.debug(f"card is ace: {card.CardFace.ACE == verify_card.face}")
+            logger.debug(f"card is same suit as pile: {verify_card.suit == self._suit}")
             return card.CardFace.ACE == verify_card.face and verify_card.suit == self._suit
 
     def take(self, n=0):
@@ -133,6 +138,7 @@ class Game:
                 lst.append(j.short)
             lines.append(lst)
 
+        logger.debug(f"lines: {lines}")
         print("\n".join(" ".join(i) for i in lines))
 
     def place(self, take_number: int, take_index: int, put_index: int):
@@ -158,6 +164,11 @@ class Game:
         if put_index ^ 0b10000 < 0b10000:
             to_put = self.foundations
             put_index ^= 0b10000
+
+        logger.debug(f"put: {to_put}, index: {put_index}")
+        logger.debug(f"take: {to_take}, index: {take_index}")
+        logger.debug(f"how many? {take_number}")
+        logger.debug(f"put deck: {to_put[put_index]}, take deck: {to_take[take_index]}")
 
         if to_put[put_index].verify(to_take[take_index].deck[-take_number]):
             self.hand_deck.put(to_take[take_index].take(take_number))

@@ -121,6 +121,8 @@ class CommandParser:
                            else parse_number(parsed.deck_identifier_2) - 1)
         card_amount = parse_number(parsed.card_amount)
 
+        logger.debug(f"deck identifiers: {deck_identifier}")
+
         self.game_obj.place(card_amount, *deck_identifier)
 
         self.info("")
