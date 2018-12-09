@@ -90,6 +90,10 @@ class CardSuit(enum.Enum):
 
         return self_color == other_color
 
+    @staticmethod
+    def list():
+        return list(map(lambda c: c.value, CardSuit))
+
 
 class Card:
     """
@@ -210,6 +214,16 @@ class CardDeck:
             return ' '.join([i.short for i in self._deck])
         else:
             return "Empty deck"
+
+    @property
+    def short(self):
+        return ' '.join(self.short_iter())
+
+    def short_iter(self):
+        if self._deck:
+            return [i.short for i in self._deck]
+        else:
+            return ['[]']
 
     def __repr__(self):
         return f"<{type(self).__qualname__}: [{', '.join([repr(card) for card in self._deck]).strip()}]>"

@@ -51,6 +51,14 @@ class TableauPile:
     def iterator_deck(self):
         return [*self.hidden_deck, *self.shown_deck]
 
+    def short_iter(self):
+        hi = self.hidden_deck.short_iter()
+        si = self.shown_deck.short_iter()
+        if not self.hidden_deck and not self.shown_deck:
+            return hi
+        else:
+            return [*(hi if hi != ["[]"] else []), *(si if si != ["[]"] else [])]
+
     def __iter__(self):
         return self
 
@@ -127,15 +135,17 @@ class Game:
         logger.debug(f"hand: {self.hand_deck}")
 
     def move_info(self):
-        dummy = namedtuple("dummy", "short")
         lines = [
-            ["XX", self.stock_deck[-1].short, "  ", *(i[-1].short if i else "//" for i in self.foundations)],
-            [""]
+            ["XX", self.stock_deck[-1].short, "  ",
+             *(v[-1].short if v else f"X{card.CardSuit.list()[i][0].upper()}" for i,v in enumerate(self.foundations))],
+            [""],
+            [f"d{i}" for i in range(1,8)]
         ]
-        for i in itertools.zip_longest(*self.decks, fillvalue=dummy("  ")):
+
+        for i in itertools.zip_longest(*(x.short_iter() for x in self.decks), fillvalue="  "):
             lst = []
             for j in i:
-                lst.append(j.short)
+                lst.append(j)
             lines.append(lst)
 
         logger.debug(f"lines: {lines}")
