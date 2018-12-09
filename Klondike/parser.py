@@ -137,4 +137,3 @@ class CommandParser:
 
     def help(self, parsed):
         print(self.command_list)
-
