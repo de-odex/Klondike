@@ -136,4 +136,5 @@ class CommandParser:
         self.game_obj.move_info()
 
     def help(self, parsed):
-        raise NotImplementedError
+        print(self.command_list)
+
