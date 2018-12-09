@@ -106,7 +106,7 @@ class CommandParser:
     def debug(self, parsed):
         self.game_obj.debug()
 
-    def place(self, parsed):
+    def move(self, parsed):
         deck_identifier_parser = lambda name: Or(
                 [Suppress("deck") + Word(alphanums).setResultsName(f'deck_identifier_{name}'),
                  Suppress("the") + Word(alphanums).setResultsName(f'deck_identifier_{name}') + Suppress("deck")])
@@ -115,7 +115,7 @@ class CommandParser:
                 Or([Suppress("into"), Suppress("to")]) + deck_identifier_parser("2")
         parsed = place.parseString(parsed[1])
 
-        deck_identifier = (parse_number(parsed.deck_identifier_1) - 1 if parsed.deck_identifier_1 != "main" else 0,
+        deck_identifier = (parse_number(parsed.deck_identifier_1) - 1 if parsed.deck_identifier_1 != "stock" else -1,
                            ["clubs", "diamonds", "hearts", "spades"].index(parsed.deck_identifier_2) + 0b10000
                            if any(parsed.deck_identifier_2 == i for i in ["clubs", "diamonds", "hearts", "spades"])
                            else parse_number(parsed.deck_identifier_2) - 1)
